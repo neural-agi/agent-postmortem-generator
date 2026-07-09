@@ -34,8 +34,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "pydantic>=2.13.4",
     "networkx>=3.6.1",
+    "pydantic>=2.13.4",
     "rich>=15.0.0",
     "structlog>=26.1.0",
     "typer>=0.26.8",
