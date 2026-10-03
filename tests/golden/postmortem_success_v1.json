@@ -1,0 +1,114 @@
+{
+  "report_id": "postmortem:v1:trace-success:success-run",
+  "title": "Postmortem for run success-run",
+  "metadata": {
+    "project_name": "Agent Postmortem Generator",
+    "module_part": "Part 5",
+    "generated_at": null,
+    "trace_id": "trace-success",
+    "run_id": "success-run",
+    "analysis_version": null
+  },
+  "sections": [
+    {
+      "section_id": "executive_summary",
+      "title": "Executive Summary",
+      "order": 0,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "The analysis classified this run as a successful completion.",
+          "bullets": [],
+          "rows": [],
+          "evidence_refs": [],
+          "claim_source": "analysis_conclusion"
+        },
+        {
+          "type": "paragraph",
+          "text": "The analysis did not identify a primary fault.",
+          "bullets": [],
+          "rows": [],
+          "evidence_refs": [],
+          "claim_source": "analysis_conclusion"
+        }
+      ]
+    },
+    {
+      "section_id": "failure_chain",
+      "title": "Failure Chain",
+      "order": 1,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "The analysis did not provide an ordered causal chain.",
+          "bullets": [],
+          "rows": [],
+          "evidence_refs": [],
+          "claim_source": "placeholder"
+        }
+      ]
+    },
+    {
+      "section_id": "primary_fault",
+      "title": "Primary Fault",
+      "order": 2,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "A primary fault was not available from the analysis.",
+          "bullets": [],
+          "rows": [],
+          "evidence_refs": [],
+          "claim_source": "placeholder"
+        }
+      ]
+    },
+    {
+      "section_id": "contributing_factors",
+      "title": "Contributing Factors",
+      "order": 3,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "The analysis provided no alternative fault candidates.",
+          "bullets": [],
+          "rows": [],
+          "evidence_refs": [],
+          "claim_source": "placeholder"
+        }
+      ]
+    },
+    {
+      "section_id": "evidence",
+      "title": "Evidence",
+      "order": 4,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "Canonical evidence was not available for this analysis.",
+          "bullets": [],
+          "rows": [],
+          "evidence_refs": [],
+          "claim_source": "placeholder"
+        }
+      ]
+    },
+    {
+      "section_id": "recommended_follow_ups",
+      "title": "Recommended Follow-ups",
+      "order": 5,
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "No recommended follow-ups were provided by the analysis.",
+          "bullets": [],
+          "rows": [],
+          "evidence_refs": [],
+          "claim_source": "placeholder"
+        }
+      ]
+    }
+  ],
+  "diagnostics": [],
+  "version": "v1"
+}
