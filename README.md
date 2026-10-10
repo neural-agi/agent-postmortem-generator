@@ -1,345 +1,141 @@
-<div align="center">
+# Agent Postmortem Generator
 
-<br/>
+Agent Postmortem Generator produces deterministic, evidence-based postmortem artifacts from generic JSON execution traces. It makes failed AI-agent executions easier to inspect without heuristic inference or external services.
 
-# 🔍 Agent Postmortem Generator
+## MVP Scope
 
-### Turn failed AI agent traces into blameless, SRE-style incident reports.
+The implemented MVP accepts the repository's generic JSON trace contract and produces a validated canonical trace, structured analysis, an evidence-bound postmortem, a deterministic execution graph, and Markdown, JSON, and Mermaid files.
 
-<br/>
+The MVP does not include framework adapters, batch processing, stdin input, PDF/HTML/SVG/PNG rendering, a web UI, network calls, LLM calls, or remote storage. Timeout, cancellation, retry, and competing-failure semantics are only available when represented explicitly by the current generic input contract and downstream models.
 
-**A deterministic debugging tool for LangGraph, CrewAI, OpenAI Agents SDK, AutoGen, and generic JSON traces.**
+## Architecture
 
-<br/>
-
-[![Status](https://img.shields.io/badge/status-early%20development-yellow?style=for-the-badge)](https://github.com/neural-agi/agent-postmortem-generator)
-[![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
-[![uv](https://img.shields.io/badge/package%20manager-uv-purple?style=for-the-badge)](https://github.com/astral-sh/uv)
-[![Ruff](https://img.shields.io/badge/lint-ruff-red?style=for-the-badge)](https://github.com/astral-sh/ruff)
-
-<!-- TODO: Add CI badge once GitHub Actions is configured -->
-<!-- TODO: Add test count badge once suite stabilizes -->
-
-<br/>
-
-**[🤔 Why This Exists](#-why-this-exists) · [✨ What Makes It Different](#-what-makes-it-different) · [🏗 Pipeline](#-pipeline-architecture) · [📄 Example Output](#-example-output) · [🚀 Quick Start](#-quick-start) · [🗺 Roadmap](#-roadmap)**
-
-</div>
-
----
-
-## 🤔 Why This Exists
-
-Debugging AI agents is a mess.
-
-A trace tells you **what happened** — but not always **why it failed**, **where the failure chain started**, or **what to fix next**. As agent systems get more complex, the debugging problem gets worse: nested calls, retries, tool failures, bad state transitions, malformed logs, and unclear root causes buried in a wall of JSON.
-
-**Agent Postmortem Generator** converts failed execution traces into structured postmortems that explain:
-
-| Section | What It Answers |
-|---|---|
-| Executive Summary | What happened, in plain language |
-| Root Cause | The actual underlying failure, not just the symptom |
-| Failure Chain | The sequence of events from trigger to failure |
-| Patient Zero | Where the failure chain actually started |
-| Timeline | Chronological reconstruction of the incident |
-| Contributing Factors | Secondary conditions that made it worse |
-| Suggested Fixes | Concrete, actionable remediation steps |
-| Confidence Score | How certain the analysis is — no false precision |
-| Visual Execution Graph | Mermaid diagram of the full execution path |
-| Action Items | What to change before this happens again |
-
-The goal is simple: **make multi-agent debugging dramatically easier.**
-
----
-
-## ✨ What Makes It Different
-
-Most tracing tools show you logs. This project aims to show you **incident analysis.**
-
-|  | Typical Trace Viewers | Agent Postmortem Generator |
-|---|---|---|
-| **Output** | Raw logs / span trees | Structured incident report |
-| **Root cause** | You infer it manually | Explicitly identified with confidence score |
-| **Ambiguous input** | Best-effort guessing | Fails clearly — no invented meaning |
-| **Framework coverage** | Usually single-framework | Framework-agnostic canonical model |
-| **Analysis approach** | Heuristic pattern matching | Deterministic, evidence-based |
-| **Failure explanation** | "Something went wrong here" | Failure chain from patient zero forward |
-
----
-
-## 🏗 Pipeline Architecture
-
-Every stage has exactly one job. No stage guesses on behalf of another.
-
-```
-Raw Trace
-      │
-      ▼
-Parser & Validation
-      │  rejects malformed input early, preserves diagnostics
-      ▼
-Canonical Trace Model
-      │  one stable internal contract, framework-agnostic
-      ▼
-Normalization
-      │  converts framework-specific traces into the canonical model
-      ▼
-Analysis Engine
-      │  detects failure chains and meaningful relationships
-      ▼
-Postmortem Generator
-      │  turns evidence into a readable incident report
-      ▼
-Renderers
-      │  exports to Markdown, PDF, graphs, and diagrams
-      ▼
-Incident Report
+```text
+Generic JSON trace
+    -> Parser and Validation
+    -> Canonical Trace Model
+    -> Normalization
+    -> Analysis
+    -> Postmortem Generation
+    -> Graph Generation
+    -> Rendering and Export
+    -> Markdown / JSON / Mermaid artifacts
 ```
 
-> No guesswork. No hidden repair magic. No "maybe the model can infer it."
+The CLI only validates command-line input, calls these stages, reports diagnostics, and selects output targets. It does not interpret trace semantics or duplicate pipeline logic.
 
-**Component breakdown:**
+## Installation
 
-| Component | Role | Status |
-|---|---|---|
-| **Canonical Trace Model** | Immutable internal schema — the stable contract every other stage relies on | ✅ |
-| **Parser & Validation Engine** | Structural + semantic validation, preserves unknown fields, stable diagnostic ordering | ✅ |
-| **Normalization Engine** | Converts LangGraph / CrewAI / AutoGen / OpenAI traces into the canonical model | 🔜 |
-| **Analysis Engine** | Failure chain detection, patient-zero identification, contributing factor analysis | 🔜 |
-| **Postmortem Generator** | Evidence → structured incident report with confidence scoring | 🔜 |
-| **Renderers** | Markdown, PDF, Mermaid graph, and interactive export | 🔜 |
-
----
-
-## 📊 Current Status
-
-### ✅ Completed
-
-- Canonical Trace Model
-- Parser & Validation Engine
-- Repository scaffolding
-- Tooling, tests, and documentation structure
-
-### 📋 Planned Next
-
-- Normalization Engine
-- Analysis Engine
-- Postmortem Generator
-- Graph rendering and export
-- CLI improvements
-- Adapter support for multiple agent frameworks
-
----
-
-## 💡 Core Philosophy
-
-This project is built with a few strong opinions:
-
-- **Determinism over heuristics** — the same trace always produces the same postmortem
-- **Validation before analysis** — malformed input is rejected before it can corrupt downstream reasoning
-- **Immutable internal models** — the canonical trace model never mutates once constructed
-- **Framework-agnostic core** — framework-specific logic lives in adapters, never in the core
-- **Small, testable modules** — each pipeline stage is independently verifiable
-- **Evidence-based reporting** — every claim in a postmortem traces back to specific trace data
-- **Local-first execution** — no external service required to generate a postmortem
-
-> If the input is ambiguous, the system fails clearly instead of inventing meaning.
-
----
-
-## 📄 Example Output
-
-A postmortem may look something like this:
-
-```markdown
-# Incident Summary
-
-**Patient Zero:** Tool call `search_docs` timed out.
-
-**Failure Chain:** Timeout → retry loop → context overflow → planner hallucination
-
-**Root Cause:** Missing timeout backoff policy
-
-**Suggested Fixes:**
-- Add bounded retries
-- Enforce tool timeout budgets
-- Reduce planner context growth
-- Add trace-level validation for retry storms
-```
-
-No vague "an error occurred somewhere." A specific chain, a specific cause, specific fixes.
-
----
-
-## 🎯 Supported Sources
-
-| Source | Status |
-|---|---|
-| Generic JSON logs | ✅ MVP target |
-| LangGraph | 📋 Planned |
-| CrewAI | 📋 Planned |
-| OpenAI Agents SDK | 📋 Planned |
-| AutoGen | 📋 Planned |
-| OpenTelemetry traces | 📋 Planned |
-
-The MVP starts with generic JSON input, then expands outward through adapters — the canonical model stays the same regardless of source.
-
----
-
-## 🚀 Quick Start
-
-### Install
+Requirements: Python 3.13 and `uv`.
 
 ```bash
-git clone https://github.com/neural-agi/agent-postmortem-generator.git
-cd agent-postmortem-generator
 uv sync
 ```
 
-### Run Tests
+## Quick Start
+
+The committed minimal fixture is `tests/fixtures/valid_minimal_trace.json`.
+
+```bash
+apg --help
+apg --version
+apg validate tests/fixtures/valid_minimal_trace.json
+apg analyze tests/fixtures/valid_minimal_trace.json --output-dir output
+```
+
+The default `analyze` command writes `output/postmortem.md`, `output/postmortem.json`, and `output/postmortem.mmd`.
+
+Select one format with `--format`:
+
+```bash
+apg analyze tests/fixtures/valid_minimal_trace.json --format markdown --output-dir output
+apg analyze tests/fixtures/valid_minimal_trace.json --format json --output-dir output
+apg analyze tests/fixtures/valid_minimal_trace.json --format mermaid --output-dir output
+```
+
+The default is `--format all`. Existing files are not replaced unless `--overwrite` is supplied:
+
+```bash
+apg analyze tests/fixtures/valid_minimal_trace.json --output-dir output --overwrite
+```
+
+Output directories are created when possible. The CLI prints a concise artifact summary to stdout and diagnostics or warnings to stderr.
+
+## Exit Codes
+
+| Code | Meaning |
+| ---: | --- |
+| 0 | Command succeeded |
+| 2 | Usage error or unsupported option |
+| 3 | Input path does not exist, is not a file, or is unreadable |
+| 4 | Input could not be parsed or validated |
+| 5 | Normalization, analysis, postmortem, or graph pipeline failure |
+| 6 | Output planning or filesystem export failure |
+
+Malformed JSON, invalid roots, missing required fields, duplicate IDs, broken references, and invalid event ordering are validation failures. Incomplete but valid traces may still produce artifacts with explicit analysis warnings.
+
+## Generic JSON Input
+
+The MVP input is an object containing `document_id`, `trace_version`, `run_id`, and an `events` array. Each event requires `event_id` and `sequence_index`; `timestamp` and `parent_id` are optional. Unknown root and event fields are preserved where supported.
+
+```json
+{
+  "document_id": "doc-1",
+  "trace_version": "v1",
+  "run_id": "run-1",
+  "events": [
+    {
+      "event_id": "event-1",
+      "sequence_index": 0,
+      "timestamp": "2026-07-11T10:30:00Z"
+    }
+  ]
+}
+```
+
+The generic contract does not claim framework-specific event meanings. Do not add timeout, cancellation, retry, or causal semantics unless the current parser, normalizer, and analysis models represent them explicitly.
+
+## Development
+
+Run the complete test suite and quality gates from the repository root:
 
 ```bash
 uv run pytest
-```
-
-### Lint and Format
-
-```bash
-uv run ruff format .
-uv run ruff check .
-```
-
-### Type Check
-
-```bash
 uv run mypy src
+uv run ruff check .
+uv run ruff format --check .
+uv build
+git diff --check
 ```
 
-### Usage *(evolving)*
+Tests include unit, integration, fixture, deterministic serialization, CLI, and export coverage. Golden report fixtures are stored under `tests/golden/`; input fixtures are under `tests/fixtures/`.
 
-The CLI and full normalization pipeline are still under active development. The intended workflow:
+## Current Status
 
-```bash
-apg analyze path/to/trace.json
-```
+| Part | Component | Status |
+| ---: | --- | --- |
+| 1 | Canonical Trace Model | Implemented |
+| 2 | Parser and Validation Engine | Implemented |
+| 3 | Normalization Engine | Implemented for the generic contract |
+| 4 | Analysis Engine | Implemented for supported explicit evidence and relationships |
+| 5 | Postmortem Generation | Implemented |
+| 6 | Graph Generation | Implemented |
+| 7 | Rendering and Export | Implemented for Markdown, JSON, and Mermaid |
+| 8 | CLI and Developer UX | Implemented for generic JSON |
 
-Eventually, this will produce:
+## Planned and Deferred
 
-- A validated canonical trace
-- A structured postmortem report
-- A Mermaid execution graph
-- Exportable Markdown/PDF artifacts
+- Framework adapters for LangGraph, CrewAI, OpenAI Agents SDK, and AutoGen.
+- More expressive generic trace semantics for retries, cancellation, timeout, and parallel failures.
+- PDF, HTML, SVG, and image export.
+- Batch execution, stdin support, machine-readable CLI results, and web UI features.
+- Performance, scalability, and multi-run comparison work.
 
----
+## Design Principles
 
-## 📁 Repository Structure
-
-```
-agent-postmortem-generator/
-│
-├── docs/
-│   └── roadmap/                  # phased development roadmap
-│
-├── examples/                      # example traces and expected output
-├── scripts/                       # dev tooling
-│
-├── src/
-│   └── agent_postmortem/
-│       ├── parsing/                # raw trace ingestion
-│       ├── validation/             # structural + semantic validation
-│       ├── domain/                 # canonical trace model
-│       ├── normalization/          # framework-specific adapters
-│       ├── analysis/               # failure chain + root cause detection
-│       ├── postmortem/             # report generation
-│       └── renderers/              # Markdown / PDF / Mermaid export
-│
-└── tests/                          # unit + integration test suite
-```
-
----
-
-## 🧪 Testing Philosophy
-
-Tests are not decoration here. They are part of the contract.
-
-| Test Type | Purpose |
-|---|---|
-| **Unit tests** | Model and validator behavior in isolation |
-| **Integration tests** | End-to-end parsing and validation flow |
-| **Fixtures** | Stable contracts — not just sample data, but pinned expected behavior |
-| **Deterministic diagnostics** | Every validation failure reproduces identically on every run |
-
----
-
-## 🗺 Roadmap
-
-| Part | Focus | Status |
-|---|---|---|
-| 1 | Canonical Trace Model | ✅ Complete |
-| 2 | Parser & Validation Engine | ✅ Complete |
-| 3 | Normalization Engine | 📋 Planned |
-| 4 | Analysis Engine | 📋 Planned |
-| 5 | Postmortem Generator | 📋 Planned |
-| 6 | Graph Generation | 📋 Planned |
-| 7 | Renderers and Export | 📋 Planned |
-| 8 | CLI and Developer UX | 📋 Planned |
-
-**Later / exploratory:**
-- VS Code extension
-- GitHub Action
-- OpenTelemetry ingestion
-- Interactive graph viewer
-- Drift detection integration
-- More adapter support
-
----
-
-## ⚠️ Design Principles — What This Project Avoids
-
-This project intentionally avoids:
-
-- Heuristic recovery from malformed input
-- Silent input repair
-- Mixed responsibilities within a single module
-- Giant monolithic modules
-- Framework-specific logic in the core
-
-It emphasizes clean contracts, deterministic outputs, explicit validation, stable diagnostics, and easy-to-test behavior.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome, especially if they improve:
-
-| Area | Why It Matters |
-|---|---|
-| **Parser correctness** | The foundation everything else depends on |
-| **Validation quality** | Bad validation produces misleading postmortems downstream |
-| **Deterministic analysis** | The core value proposition — this must never regress |
-| **Adapter support** | Each new framework adapter expands real-world usability |
-| **Tests and fixtures** | Tests are the contract here, not an afterthought |
-| **Docs and examples** | Lowers the bar for the next contributor |
-
-Before contributing, please read:
-- **[CONTRIBUTING.md](CONTRIBUTING.md)**
-- **[docs/roadmap/](docs/roadmap/)**
-- **[SECURITY.md](SECURITY.md)**
-
-The project is designed to stay strict, boring, and dependable — in the best possible way.
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE).
-
----
-
-<div align="center">
-
-Built by [@neural-agi](https://github.com/neural-agi)
-
-</div>
+- Deterministic output over heuristic completion.
+- Validation before semantic analysis.
+- Immutable canonical and intermediate models.
+- Evidence and provenance preserved through downstream stages.
+- Framework-specific logic outside the core pipeline.
+- No silent repair or fabricated causal relationships.
