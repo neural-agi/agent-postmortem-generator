@@ -45,6 +45,8 @@ def classify_and_select(
     edges: tuple[CausalEdge, ...],
     normalized: NormalizationResult | None,
     document: CanonicalTraceDocument,
+    *,
+    v2_semantics: bool = False,
 ) -> RuleResult:
     diagnostics: list[DiagnosticIssue] = []
     if normalized is not None:
@@ -80,7 +82,16 @@ def classify_and_select(
     if terminal_cancel is None and cancel_events:
         terminal_cancel = index.views_by_id[index.event_view_ids[cancel_events[-1].event_id]]
 
-    if run_status is RunStatus.SUCCESS:
+    if v2_semantics:
+        outcome = _classify_v2_outcome(
+            run_status,
+            failures,
+            cancellations,
+            error_events,
+            cancel_events,
+            index,
+        )
+    elif run_status is RunStatus.SUCCESS:
         outcome = TerminalOutcome.SUCCESSFUL_COMPLETION
     elif run_status is RunStatus.FAILURE or terminal_failure is not None:
         outcome = TerminalOutcome.EXPLICIT_FAILURE
@@ -92,6 +103,19 @@ def classify_and_select(
         outcome = TerminalOutcome.STRUCTURALLY_INCOMPLETE
     else:
         outcome = TerminalOutcome.PARTIAL_TERMINATION
+
+    if v2_semantics and run_status is RunStatus.SUCCESS and failures:
+        diagnostics.append(
+            DiagnosticIssue(
+                severity=IssueSeverity.WARNING,
+                code=IssueCode.CONFLICTING_TERMINAL_SIGNALS,
+                message="successful run contains an explicitly failed node; failure is retained as recovered or conflicting evidence",
+                related_node_ids=tuple(view.node_id for view in failures),
+                related_event_ids=tuple(
+                    event_id for view in failures for event_id in view.event_ids
+                ),
+            )
+        )
 
     if terminal_failure is not None and terminal_cancel is not None:
         diagnostics.append(
@@ -109,7 +133,10 @@ def classify_and_select(
                 ),
             )
         )
-    if outcome in (TerminalOutcome.PARTIAL_TERMINATION, TerminalOutcome.STRUCTURALLY_INCOMPLETE):
+    if outcome in (
+        TerminalOutcome.PARTIAL_TERMINATION,
+        TerminalOutcome.STRUCTURALLY_INCOMPLETE,
+    ):
         diagnostics.append(
             DiagnosticIssue(
                 severity=IssueSeverity.WARNING,
@@ -119,8 +146,20 @@ def classify_and_select(
                 related_event_ids=index.timeline_event_ids,
             )
         )
+    if v2_semantics and outcome is TerminalOutcome.UNKNOWN_OUTCOME:
+        diagnostics.append(
+            DiagnosticIssue(
+                severity=IssueSeverity.WARNING,
+                code=IssueCode.UNKNOWN_TERMINAL_OUTCOME,
+                message="canonical evidence does not establish a successful, failed, or cancelled run outcome",
+                related_node_ids=tuple(view.node_id for view in views),
+                related_event_ids=index.timeline_event_ids,
+            )
+        )
 
-    if outcome is TerminalOutcome.EXPLICIT_FAILURE:
+    if outcome is TerminalOutcome.EXPLICIT_FAILURE or (
+        v2_semantics and outcome is TerminalOutcome.CANCELLATION
+    ):
         candidates = _fault_candidates(index, views, edges, failures, error_events, cancel_events)
         if not candidates:
             diagnostics.append(
@@ -187,6 +226,33 @@ def classify_and_select(
         )
     )
     return RuleResult(outcome, terminal, candidates, tuple(diagnostics))
+
+
+def _classify_v2_outcome(
+    run_status: RunStatus,
+    failures: tuple[ExecutionNodeView, ...],
+    cancellations: tuple[ExecutionNodeView, ...],
+    error_events: tuple[TraceEvent, ...],
+    cancel_events: tuple[TraceEvent, ...],
+    index: TraceIndex,
+) -> TerminalOutcome:
+    """Apply the v2 terminal table without inferring run status."""
+
+    if run_status is RunStatus.SUCCESS:
+        return TerminalOutcome.SUCCESSFUL_COMPLETION
+    if run_status is RunStatus.FAILURE:
+        return TerminalOutcome.EXPLICIT_FAILURE
+    if run_status is RunStatus.CANCELLED:
+        return TerminalOutcome.CANCELLATION
+    if failures or cancellations or error_events or cancel_events:
+        return TerminalOutcome.UNKNOWN_OUTCOME
+    if not index.views_by_id:
+        return TerminalOutcome.STRUCTURALLY_INCOMPLETE
+    if any(
+        index.events_by_id[event_id].kind is EventKind.END for event_id in index.timeline_event_ids
+    ):
+        return TerminalOutcome.UNKNOWN_OUTCOME
+    return TerminalOutcome.PARTIAL_TERMINATION
 
 
 def _select_terminal(

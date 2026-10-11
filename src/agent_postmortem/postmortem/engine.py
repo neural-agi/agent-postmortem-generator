@@ -70,7 +70,11 @@ def _analysis_diagnostics(analysis: AnalysisResult) -> tuple[DiagnosticEntry, ..
             diagnostic_code = DiagnosticCode.UNRESOLVED_AMBIGUITY
         elif code == "conflicting_terminal_signals":
             diagnostic_code = DiagnosticCode.CONTRADICTION
-        elif code in {"incomplete_trace", "insufficient_fault_evidence"}:
+        elif code in {
+            "incomplete_trace",
+            "insufficient_fault_evidence",
+            "unknown_terminal_outcome",
+        }:
             diagnostic_code = DiagnosticCode.INCOMPLETE_ANALYSIS
         elif code in {
             "unsupported_event_kind",

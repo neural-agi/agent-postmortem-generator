@@ -42,9 +42,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/<YOUR_USERNAME>/agent-postmortem-generator"
-Repository = "https://github.com/<YOUR_USERNAME>/agent-postmortem-generator"
-Issues = "https://github.com/<YOUR_USERNAME>/agent-postmortem-generator/issues"
+Homepage = "https://github.com/neural-agi/agent-postmortem-generator"
+Repository = "https://github.com/neural-agi/agent-postmortem-generator"
+Issues = "https://github.com/neural-agi/agent-postmortem-generator/issues"
 
 [project.scripts]
 apg = "agent_postmortem.cli:app"

@@ -1,0 +1,1 @@
+{"document_id":"v2-unknown-end-doc","trace_version":"v2","run_id":"v2-unknown-end-run","nodes":[{"node_id":"agent","kind":"agent_step","status":"unknown","sequence_index":0}],"events":[{"event_id":"end","sequence_index":0,"kind":"end","node_id":"agent"}]}

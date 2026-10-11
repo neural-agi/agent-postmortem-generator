@@ -16,9 +16,10 @@ from agent_postmortem.analysis.models import (
     EvidenceItem,
     ExecutionNodeView,
     FailureChain,
+    TerminalOutcome,
 )
 from agent_postmortem.analysis.rules import RuleResult, classify_and_select
-from agent_postmortem.domain import CanonicalTraceDocument, TraceEvent
+from agent_postmortem.domain import CanonicalTraceDocument, NodeStatus, TraceEvent
 from agent_postmortem.normalization.models import NormalizationResult
 
 
@@ -35,7 +36,14 @@ class AnalysisEngine:
             document = trace
         index = build_trace_index(document)
         causality = resolve_causality(index, normalized)
-        rules = classify_and_select(index, causality.views, causality.edges, normalized, document)
+        rules = classify_and_select(
+            index,
+            causality.views,
+            causality.edges,
+            normalized,
+            document,
+            v2_semantics=normalized is not None and normalized.normalization_schema_version == "v2",
+        )
         chain = _failure_chain(index, causality.views, causality.edges, rules)
         evidence = _collect_evidence(index, causality.views, causality.edges, rules, chain)
         diagnostics = _ordered_diagnostics(
@@ -131,6 +139,22 @@ def _collect_evidence(
         for event_id in view.event_ids:
             event = index.events_by_id[event_id]
             collected.extend(_event_facts(event, node_id))
+    if rules.outcome is TerminalOutcome.SUCCESSFUL_COMPLETION:
+        for view in views:
+            node = index.nodes_by_id.get(view.node_id)
+            if node is not None and node.status is NodeStatus.FAILURE:
+                collected.append(
+                    EvidenceItem(
+                        field_path=f"nodes/{view.node_id}/status",
+                        value=node.status.value,
+                        source_node_id=view.node_id,
+                        source_event_id=None,
+                        note="failed node retained as recovered or conflicting evidence",
+                        source_ref=node.provenance,
+                    )
+                )
+                for event_id in view.event_ids:
+                    collected.extend(_event_facts(index.events_by_id[event_id], view.node_id))
     for edge in chain.propagation_steps:
         collected.append(
             EvidenceItem(

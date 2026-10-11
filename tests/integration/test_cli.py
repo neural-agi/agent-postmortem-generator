@@ -53,3 +53,27 @@ def test_cli_does_not_overwrite_without_flag(tmp_path: Path) -> None:
     assert first.returncode == 0
     assert second.returncode == 6
     assert "already exists" in second.stderr
+
+
+def test_v2_cli_generates_unknown_outcome_artifacts(tmp_path: Path) -> None:
+    trace = tmp_path / "v2.json"
+    trace.write_text(
+        '{"document_id":"doc-v2","trace_version":"v2","run_id":"run-v2",'
+        '"events":[{"event_id":"end","sequence_index":0,"kind":"end"}]}',
+        encoding="utf-8",
+    )
+    output = tmp_path / "artifacts"
+
+    validated = _run("validate", str(trace))
+    analyzed = _run("analyze", str(trace), "--output-dir", str(output))
+
+    assert validated.returncode == 0
+    assert "Valid trace: v2.json" in validated.stdout
+    assert analyzed.returncode == 0
+    assert {path.name for path in output.iterdir()} == {
+        "postmortem.json",
+        "postmortem.md",
+        "postmortem.mmd",
+    }
+    assert "unknown outcome" in (output / "postmortem.md").read_text(encoding="utf-8")
+    assert "unknown_terminal_outcome" in analyzed.stderr

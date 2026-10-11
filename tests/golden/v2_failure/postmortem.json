@@ -1,0 +1,383 @@
+{
+  "report": {
+    "report_id": "postmortem:v1:v2-failure-doc:v2-failure-run",
+    "title": "Postmortem for run v2-failure-run",
+    "metadata": {
+      "project_name": "Agent Postmortem Generator",
+      "module_part": "Part 5",
+      "generated_at": null,
+      "trace_id": "v2-failure-doc",
+      "run_id": "v2-failure-run",
+      "analysis_version": null
+    },
+    "sections": [
+      {
+        "section_id": "executive_summary",
+        "title": "Executive Summary",
+        "order": 0,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis classified this run as an explicit failure.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          },
+          {
+            "type": "paragraph",
+            "text": "The analysis selected candidate tool/error as the primary fault.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": "err-1",
+                "trace_node_id": "tool",
+                "event_index": 0,
+                "snippet": "connection refused",
+                "note": "canonical event field",
+                "status": "available"
+              },
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": "v2-event-evidence_7422612fb37b1848050c367dfca7514f34a3dc7d0e493609fb2d2d00a4d55ac5",
+                "trace_node_id": "tool",
+                "event_index": 0,
+                "snippet": "{\"event_id\":\"error\",\"evidence_refs\":[\"err-1\"],\"kind\":\"error\",\"node_id\":\"tool\",\"parent_id\":null,\"payload\":\"connection refused\",\"sequence_index\":0,\"severity\":\"error\",\"timestamp_candidates\":[]}",
+                "note": "canonical event field",
+                "status": "available"
+              }
+            ],
+            "claim_source": "analysis_conclusion"
+          }
+        ]
+      },
+      {
+        "section_id": "failure_chain",
+        "title": "Failure Chain",
+        "order": 1,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis did not provide an ordered causal chain.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "primary_fault",
+        "title": "Primary Fault",
+        "order": 2,
+        "blocks": [
+          {
+            "type": "table",
+            "text": "",
+            "bullets": [],
+            "rows": [
+              {
+                "row_type": "finding",
+                "finding_id": "candidate:tool:error",
+                "label": "Primary fault candidate",
+                "description": "The analysis retained tool/error for reason failed_step_with_error.",
+                "confidence": null,
+                "evidence_refs": [
+                  {
+                    "row_type": "evidence_citation",
+                    "evidence_id": "err-1",
+                    "trace_node_id": "tool",
+                    "event_index": 0,
+                    "snippet": "connection refused",
+                    "note": "canonical event field",
+                    "status": "available"
+                  },
+                  {
+                    "row_type": "evidence_citation",
+                    "evidence_id": "v2-event-evidence_7422612fb37b1848050c367dfca7514f34a3dc7d0e493609fb2d2d00a4d55ac5",
+                    "trace_node_id": "tool",
+                    "event_index": 0,
+                    "snippet": "{\"event_id\":\"error\",\"evidence_refs\":[\"err-1\"],\"kind\":\"error\",\"node_id\":\"tool\",\"parent_id\":null,\"payload\":\"connection refused\",\"sequence_index\":0,\"severity\":\"error\",\"timestamp_candidates\":[]}",
+                    "note": "canonical event field",
+                    "status": "available"
+                  }
+                ],
+                "status": "analysis_selected"
+              }
+            ],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          }
+        ]
+      },
+      {
+        "section_id": "contributing_factors",
+        "title": "Contributing Factors",
+        "order": 3,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis provided no alternative fault candidates.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "evidence",
+        "title": "Evidence",
+        "order": 4,
+        "blocks": [
+          {
+            "type": "table",
+            "text": "",
+            "bullets": [],
+            "rows": [
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": "v2-event-evidence_5da5dfdd189c3f2f9af090a72319d166c20be678b05ad50037396ab3700522f8",
+                "trace_node_id": "tool",
+                "event_index": 1,
+                "snippet": "{\"event_id\":\"end\",\"evidence_refs\":[],\"kind\":\"end\",\"node_id\":\"tool\",\"parent_id\":null,\"payload\":null,\"sequence_index\":1,\"severity\":null,\"timestamp_candidates\":[]}",
+                "note": "canonical event field",
+                "status": "available"
+              },
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": "err-1",
+                "trace_node_id": "tool",
+                "event_index": 0,
+                "snippet": "connection refused",
+                "note": "canonical event field",
+                "status": "available"
+              },
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": "v2-event-evidence_7422612fb37b1848050c367dfca7514f34a3dc7d0e493609fb2d2d00a4d55ac5",
+                "trace_node_id": "tool",
+                "event_index": 0,
+                "snippet": "{\"event_id\":\"error\",\"evidence_refs\":[\"err-1\"],\"kind\":\"error\",\"node_id\":\"tool\",\"parent_id\":null,\"payload\":\"connection refused\",\"sequence_index\":0,\"severity\":\"error\",\"timestamp_candidates\":[]}",
+                "note": "canonical event field",
+                "status": "available"
+              },
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": null,
+                "trace_node_id": "tool",
+                "event_index": null,
+                "snippet": "[evidence unavailable]",
+                "note": "No canonical evidence identifier was supplied by the analysis.",
+                "status": "unavailable"
+              }
+            ],
+            "evidence_refs": [],
+            "claim_source": "evidence"
+          }
+        ]
+      },
+      {
+        "section_id": "recommended_follow_ups",
+        "title": "Recommended Follow-ups",
+        "order": 5,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "No recommended follow-ups were provided by the analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: multiple canonical event kinds map to one execution node",
+        "related_refs": [
+          "node:tool",
+          "event:error",
+          "event:end"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: timestamps are absent; explicit sequence remains the ordering key",
+        "related_refs": [
+          "node:tool",
+          "event:error",
+          "event:end"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "consistency_violation",
+        "severity": "warning",
+        "message": "Duplicate evidence was deduplicated by evidence ID and event index.",
+        "related_refs": [
+          "evidence:v2-event-evidence_5da5dfdd189c3f2f9af090a72319d166c20be678b05ad50037396ab3700522f8"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "consistency_violation",
+        "severity": "warning",
+        "message": "Duplicate evidence was deduplicated by evidence ID and event index.",
+        "related_refs": [
+          "evidence:err-1"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "consistency_violation",
+        "severity": "warning",
+        "message": "Duplicate evidence was deduplicated by evidence ID and event index.",
+        "related_refs": [
+          "evidence:v2-event-evidence_7422612fb37b1848050c367dfca7514f34a3dc7d0e493609fb2d2d00a4d55ac5"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "missing_evidence",
+        "severity": "warning",
+        "message": "An analysis claim has no canonical evidence identifier.",
+        "related_refs": [
+          "node:tool"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "missing_evidence",
+        "severity": "warning",
+        "message": "No canonical evidence identifier was supplied by the analysis.",
+        "related_refs": [],
+        "section_id": "evidence"
+      }
+    ],
+    "version": "v1"
+  },
+  "graph": {
+    "graph_id": "graph-v2-failure-run-95fccb13aee4bbf9",
+    "source_trace_id": "v2-failure-doc",
+    "analysis_id": "95fccb13aee4bbf9",
+    "version": "v1",
+    "nodes": [
+      {
+        "node_id": "event-error",
+        "event_id": "error",
+        "kind": "event",
+        "label": "error",
+        "status": "failure",
+        "order_index": 0,
+        "scope_id": "tool",
+        "evidence_refs": [
+          "err-1",
+          "v2-event-evidence_7422612fb37b1848050c367dfca7514f34a3dc7d0e493609fb2d2d00a4d55ac5"
+        ]
+      },
+      {
+        "node_id": "event-end",
+        "event_id": "end",
+        "kind": "event",
+        "label": "end",
+        "status": "failure",
+        "order_index": 1,
+        "scope_id": "tool",
+        "evidence_refs": [
+          "v2-event-evidence_5da5dfdd189c3f2f9af090a72319d166c20be678b05ad50037396ab3700522f8"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "edge_id": "edge-sequence-event-error-event-end",
+        "from_node_id": "event-error",
+        "to_node_id": "event-end",
+        "kind": "sequence",
+        "label": "next",
+        "evidence_refs": [],
+        "style_hint": null
+      }
+    ],
+    "groups": [
+      {
+        "group_id": "scope-tool",
+        "kind": "execution_scope",
+        "label": "tool",
+        "member_node_ids": [
+          "event-error",
+          "event-end"
+        ],
+        "order_index": 0
+      }
+    ],
+    "annotations": [
+      {
+        "target_id": "event-error",
+        "annotation_type": "first_fault",
+        "label": "first meaningful fault",
+        "severity": null,
+        "evidence_refs": [
+          "err-1"
+        ]
+      },
+      {
+        "target_id": "event-error",
+        "annotation_type": "terminal_failure",
+        "label": "terminal failure",
+        "severity": null,
+        "evidence_refs": []
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "multiple canonical event kinds map to one execution node",
+        "related_ids": [
+          "tool",
+          "error",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "timestamps are absent; explicit sequence remains the ordering key",
+        "related_ids": [
+          "tool",
+          "error",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "missing_timestamp",
+        "severity": "warning",
+        "message": "timestamp absent; canonical execution order is preserved",
+        "related_ids": [
+          "error",
+          "end"
+        ],
+        "recoverable": true
+      }
+    ],
+    "metadata": {
+      "graph_version": "v1",
+      "source_trace_id": "v2-failure-doc",
+      "analysis_id": "95fccb13aee4bbf9",
+      "node_count": 2,
+      "edge_count": 1,
+      "determinism_hash": "ff0e6aff88c6ae366b5d33f70767244b2c34430f29e7691192103c8865f1c8c0"
+    }
+  }
+}

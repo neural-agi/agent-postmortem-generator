@@ -38,3 +38,53 @@ def test_parser_preserves_timestamp_candidates_for_normalization_precedence() ->
     normalized = NormalizationEngine().normalize(validation.document)
 
     assert normalized.canonical_trace.events[0].timestamp.isoformat() == "2026-10-03T08:00:00+00:00"
+
+
+def test_v2_parser_output_normalizes_explicit_canonical_fields() -> None:
+    validation = parse_and_validate_input(
+        """{
+            "document_id": "doc-v2",
+            "trace_version": "v2",
+            "run_id": "run-v2",
+            "run": {
+                "status": "failure",
+                "started_at": "2026-10-03T08:00:00Z",
+                "ended_at": "2026-10-03T08:02:00Z",
+                "source_format": "generic-json"
+            },
+            "nodes": [
+                {"node_id": "root", "kind": "agent_step", "status": "success", "sequence_index": 0},
+                {"node_id": "tool", "kind": "tool_call", "status": "failure", "sequence_index": 1,
+                 "parent_node_id": "root", "series_id": "tool-series", "attempt_index": 0,
+                 "attributes": {"z": "2", "a": "1"}}
+            ],
+            "evidence": [{"evidence_id": "source-error", "evidence_type": "inline_text",
+                          "content_summary": "tool failed"}],
+            "events": [
+                {"event_id": "error", "sequence_index": 1, "kind": "error", "severity": "error",
+                 "node_id": "tool", "payload": "failed", "evidence_refs": ["source-error"],
+                 "created_at": "2026-10-03T08:01:00Z"}
+            ]
+        }"""
+    )
+
+    assert validation.report.success
+    assert validation.v2_document is not None
+    first = NormalizationEngine().normalize(validation.v2_document)
+    second = NormalizationEngine().normalize(validation.v2_document)
+
+    assert first == second
+    assert first.canonical_trace.run.status.value == "failure"
+    assert first.canonical_trace.run.source_format == "generic-json"
+    tool = next(node for node in first.canonical_trace.nodes if node.node_id == "tool")
+    assert tool.status.value == "failure"
+    assert tool.kind.value == "tool_call"
+    assert tool.parent_node_id == "root"
+    assert tool.series_id == "tool-series"
+    assert tool.attempt_index == 0
+    assert tool.attributes == (("a", "1"), ("z", "2"))
+    event = first.canonical_trace.events[0]
+    assert event.payload == "failed"
+    assert event.severity.value == "error"
+    assert event.evidence_refs[0] == "source-error"
+    assert any(record.evidence_id == "source-error" for record in first.canonical_trace.evidence)

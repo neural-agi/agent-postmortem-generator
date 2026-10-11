@@ -1,0 +1,209 @@
+{
+  "report": {
+    "report_id": "postmortem:v1:v2-unknown-end-doc:v2-unknown-end-run",
+    "title": "Postmortem for run v2-unknown-end-run",
+    "metadata": {
+      "project_name": "Agent Postmortem Generator",
+      "module_part": "Part 5",
+      "generated_at": null,
+      "trace_id": "v2-unknown-end-doc",
+      "run_id": "v2-unknown-end-run",
+      "analysis_version": null
+    },
+    "sections": [
+      {
+        "section_id": "executive_summary",
+        "title": "Executive Summary",
+        "order": 0,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis classified this run as unknown outcome.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          },
+          {
+            "type": "paragraph",
+            "text": "The analysis did not identify a primary fault.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          }
+        ]
+      },
+      {
+        "section_id": "failure_chain",
+        "title": "Failure Chain",
+        "order": 1,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis did not provide an ordered causal chain.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "primary_fault",
+        "title": "Primary Fault",
+        "order": 2,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A primary fault was not available from the analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "contributing_factors",
+        "title": "Contributing Factors",
+        "order": 3,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis provided no alternative fault candidates.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "evidence",
+        "title": "Evidence",
+        "order": 4,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Canonical evidence was not available for this analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "recommended_follow_ups",
+        "title": "Recommended Follow-ups",
+        "order": 5,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "No recommended follow-ups were provided by the analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: timestamps are absent; explicit sequence remains the ordering key",
+        "related_refs": [
+          "node:agent",
+          "event:end"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "incomplete_analysis",
+        "severity": "warning",
+        "message": "Analysis: canonical evidence does not establish a successful, failed, or cancelled run outcome",
+        "related_refs": [
+          "node:agent",
+          "event:end"
+        ],
+        "section_id": null
+      }
+    ],
+    "version": "v1"
+  },
+  "graph": {
+    "graph_id": "graph-v2-unknown-end-run-be5229981c3e4e0e",
+    "source_trace_id": "v2-unknown-end-doc",
+    "analysis_id": "be5229981c3e4e0e",
+    "version": "v1",
+    "nodes": [
+      {
+        "node_id": "event-end",
+        "event_id": "end",
+        "kind": "event",
+        "label": "end",
+        "status": "unknown",
+        "order_index": 0,
+        "scope_id": "agent",
+        "evidence_refs": [
+          "v2-event-evidence_b4db55e43e66c9f142bdcb3073b01e8b9ea0222c6a56bdf1697ce9cc15339206"
+        ]
+      }
+    ],
+    "edges": [],
+    "groups": [
+      {
+        "group_id": "scope-agent",
+        "kind": "execution_scope",
+        "label": "agent",
+        "member_node_ids": [
+          "event-end"
+        ],
+        "order_index": 0
+      }
+    ],
+    "annotations": [],
+    "diagnostics": [
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "canonical evidence does not establish a successful, failed, or cancelled run outcome",
+        "related_ids": [
+          "agent",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "timestamps are absent; explicit sequence remains the ordering key",
+        "related_ids": [
+          "agent",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "missing_timestamp",
+        "severity": "warning",
+        "message": "timestamp absent; canonical execution order is preserved",
+        "related_ids": [
+          "end"
+        ],
+        "recoverable": true
+      }
+    ],
+    "metadata": {
+      "graph_version": "v1",
+      "source_trace_id": "v2-unknown-end-doc",
+      "analysis_id": "be5229981c3e4e0e",
+      "node_count": 1,
+      "edge_count": 0,
+      "determinism_hash": "2eb78b8290f0c334d643b0f392a18f136d0fe3dbc848f8c814d45de64067c890"
+    }
+  }
+}

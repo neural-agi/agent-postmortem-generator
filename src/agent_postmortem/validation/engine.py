@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import BinaryIO, TextIO, cast
 
 from agent_postmortem.parsing.input import RawInput
-from agent_postmortem.parsing.pipeline import parse_input
 from agent_postmortem.validation.diagnostics import (
     Diagnostic,
     DiagnosticCode,
@@ -21,6 +20,8 @@ from agent_postmortem.validation.trace_document import (
     TraceEvent,
     ValidatedTraceDocument,
 )
+from agent_postmortem.validation.v2_document import V2ValidatedTraceDocument
+from agent_postmortem.validation.v2_validator import V2Validator
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,6 +30,7 @@ class ValidationResult:
 
     report: ValidationReport
     document: ValidatedTraceDocument | None
+    v2_document: V2ValidatedTraceDocument | None = None
 
 
 class ValidationEngine:
@@ -37,10 +39,13 @@ class ValidationEngine:
     def __init__(self) -> None:
         self._structural_validator = StructuralValidator()
         self._semantic_validator = SemanticValidator()
+        self._v2_validator = V2Validator()
 
     def validate(
         self, source: str | bytes | Path | TextIO | BinaryIO | RawInput
     ) -> ValidationResult:
+        from agent_postmortem.parsing.pipeline import parse_input
+
         parse_result = parse_input(source)
         if parse_result.document is None:
             report = ValidationReport(success=False, diagnostics=parse_result.diagnostics)
@@ -55,6 +60,36 @@ class ValidationEngine:
                 message="top-level JSON value must be an object",
             )
             report = ValidationReport(success=False, diagnostics=(diagnostic,))
+            return ValidationResult(report=report, document=None)
+
+        version = parsed_root.get("trace_version")
+        if isinstance(version, str) and version == "v2":
+            v2_document, v2_diagnostics = self._v2_validator.validate(
+                parsed_root, parse_result.raw_input.metadata
+            )
+            diagnostics = list(parse_result.diagnostics)
+            diagnostics.extend(v2_diagnostics)
+            report = ValidationReport(
+                success=v2_document is not None
+                and not any(item.severity is DiagnosticSeverity.ERROR for item in diagnostics),
+                diagnostics=tuple(diagnostics),
+            )
+            return ValidationResult(
+                report=report,
+                document=None,
+                v2_document=v2_document if report.success else None,
+            )
+
+        if isinstance(version, str) and version and version != "v1":
+            diagnostic = Diagnostic(
+                severity=DiagnosticSeverity.ERROR,
+                code=DiagnosticCode.UNSUPPORTED_VERSION,
+                field_path="/trace_version",
+                message="trace_version must be 'v1' or 'v2'",
+            )
+            report = ValidationReport(
+                success=False, diagnostics=(*parse_result.diagnostics, diagnostic)
+            )
             return ValidationResult(report=report, document=None)
 
         envelope, events, structural_diagnostics = self._structural_validator.validate(parsed_root)

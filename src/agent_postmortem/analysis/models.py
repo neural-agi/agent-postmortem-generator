@@ -16,6 +16,7 @@ class TerminalOutcome(StrEnum):
     EXPLICIT_FAILURE = "explicit_failure"
     CANCELLATION = "cancellation"
     TIMEOUT = "timeout"
+    UNKNOWN_OUTCOME = "unknown_outcome"
     PARTIAL_TERMINATION = "partial_termination"
     STRUCTURALLY_INCOMPLETE = "structurally_incomplete_termination"
 
@@ -64,6 +65,7 @@ class IssueCode(StrEnum):
     AMBIGUOUS_TERMINAL = "ambiguous_terminal"
     PARALLEL_FAILURE_BRANCHES = "parallel_failure_branches"
     CONFLICTING_TERMINAL_SIGNALS = "conflicting_terminal_signals"
+    UNKNOWN_TERMINAL_OUTCOME = "unknown_terminal_outcome"
     INCOMPLETE_TRACE = "incomplete_trace"
     UPSTREAM_NORMALIZATION_ISSUE = "upstream_normalization_issue"
 

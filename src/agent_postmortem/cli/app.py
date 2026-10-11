@@ -91,10 +91,13 @@ def analyze(
         raise typer.Exit(EXIT_USAGE)
     try:
         result = parse_and_validate_input(path)
-        if not result.report.success or result.document is None:
+        if not result.report.success or (result.document is None and result.v2_document is None):
             _print_diagnostics(result.report.diagnostics)
             raise typer.Exit(EXIT_VALIDATION)
-        normalized = NormalizationEngine().normalize(result.document)
+        validated = result.document if result.document is not None else result.v2_document
+        if validated is None:
+            raise typer.Exit(EXIT_VALIDATION)
+        normalized = NormalizationEngine().normalize(validated)
         analysis = AnalysisEngine().analyze(normalized)
         generated = PostmortemEngine().generate(analysis, normalized.canonical_trace)
         graph = GraphEngine().generate(normalized.canonical_trace, analysis)

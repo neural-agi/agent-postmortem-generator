@@ -1,0 +1,237 @@
+{
+  "report": {
+    "report_id": "postmortem:v1:v2-success-doc:v2-success-run",
+    "title": "Postmortem for run v2-success-run",
+    "metadata": {
+      "project_name": "Agent Postmortem Generator",
+      "module_part": "Part 5",
+      "generated_at": null,
+      "trace_id": "v2-success-doc",
+      "run_id": "v2-success-run",
+      "analysis_version": null
+    },
+    "sections": [
+      {
+        "section_id": "executive_summary",
+        "title": "Executive Summary",
+        "order": 0,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis classified this run as a successful completion.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          },
+          {
+            "type": "paragraph",
+            "text": "The analysis did not identify a primary fault.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          }
+        ]
+      },
+      {
+        "section_id": "failure_chain",
+        "title": "Failure Chain",
+        "order": 1,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis did not provide an ordered causal chain.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "primary_fault",
+        "title": "Primary Fault",
+        "order": 2,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A primary fault was not available from the analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "contributing_factors",
+        "title": "Contributing Factors",
+        "order": 3,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis provided no alternative fault candidates.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "evidence",
+        "title": "Evidence",
+        "order": 4,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Canonical evidence was not available for this analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "recommended_follow_ups",
+        "title": "Recommended Follow-ups",
+        "order": 5,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "No recommended follow-ups were provided by the analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: multiple canonical event kinds map to one execution node",
+        "related_refs": [
+          "node:agent",
+          "event:start",
+          "event:end"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: timestamps are absent; explicit sequence remains the ordering key",
+        "related_refs": [
+          "node:agent",
+          "event:start",
+          "event:end"
+        ],
+        "section_id": null
+      }
+    ],
+    "version": "v1"
+  },
+  "graph": {
+    "graph_id": "graph-v2-success-run-41868b5b8f04bfea",
+    "source_trace_id": "v2-success-doc",
+    "analysis_id": "41868b5b8f04bfea",
+    "version": "v1",
+    "nodes": [
+      {
+        "node_id": "event-start",
+        "event_id": "start",
+        "kind": "event",
+        "label": "start",
+        "status": "success",
+        "order_index": 0,
+        "scope_id": "agent",
+        "evidence_refs": [
+          "v2-event-evidence_892455ca8323ea34aae08ec43226659bfbe45ee821fef8891c5d942931fcdf6a"
+        ]
+      },
+      {
+        "node_id": "event-end",
+        "event_id": "end",
+        "kind": "event",
+        "label": "end",
+        "status": "success",
+        "order_index": 1,
+        "scope_id": "agent",
+        "evidence_refs": [
+          "v2-event-evidence_c37925e5c056973fc88ee2bef5dd7a2069fb0df9ca497eb0791fcfb1ee769650"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "edge_id": "edge-sequence-event-start-event-end",
+        "from_node_id": "event-start",
+        "to_node_id": "event-end",
+        "kind": "sequence",
+        "label": "next",
+        "evidence_refs": [],
+        "style_hint": null
+      }
+    ],
+    "groups": [
+      {
+        "group_id": "scope-agent",
+        "kind": "execution_scope",
+        "label": "agent",
+        "member_node_ids": [
+          "event-start",
+          "event-end"
+        ],
+        "order_index": 0
+      }
+    ],
+    "annotations": [],
+    "diagnostics": [
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "multiple canonical event kinds map to one execution node",
+        "related_ids": [
+          "agent",
+          "start",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "timestamps are absent; explicit sequence remains the ordering key",
+        "related_ids": [
+          "agent",
+          "start",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "missing_timestamp",
+        "severity": "warning",
+        "message": "timestamp absent; canonical execution order is preserved",
+        "related_ids": [
+          "start",
+          "end"
+        ],
+        "recoverable": true
+      }
+    ],
+    "metadata": {
+      "graph_version": "v1",
+      "source_trace_id": "v2-success-doc",
+      "analysis_id": "41868b5b8f04bfea",
+      "node_count": 2,
+      "edge_count": 1,
+      "determinism_hash": "c17ca25551034d024526cd4a2478f6bcac6ee67328cb66323b3a6bc54ce13f32"
+    }
+  }
+}

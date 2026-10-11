@@ -1,0 +1,1 @@
+{"document_id":"v2-cancel-doc","trace_version":"v2","run_id":"v2-cancel-run","run":{"status":"cancelled"},"nodes":[{"node_id":"agent","kind":"agent_step","status":"cancelled","sequence_index":0}],"events":[{"event_id":"cancel","sequence_index":0,"kind":"cancellation","node_id":"agent"},{"event_id":"end","sequence_index":1,"kind":"end","node_id":"agent"}]}

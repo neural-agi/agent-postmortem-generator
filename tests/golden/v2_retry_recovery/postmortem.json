@@ -1,0 +1,405 @@
+{
+  "report": {
+    "report_id": "postmortem:v1:v2-retry-doc:v2-retry-run",
+    "title": "Postmortem for run v2-retry-run",
+    "metadata": {
+      "project_name": "Agent Postmortem Generator",
+      "module_part": "Part 5",
+      "generated_at": null,
+      "trace_id": "v2-retry-doc",
+      "run_id": "v2-retry-run",
+      "analysis_version": null
+    },
+    "sections": [
+      {
+        "section_id": "executive_summary",
+        "title": "Executive Summary",
+        "order": 0,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis classified this run as a successful completion.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          },
+          {
+            "type": "paragraph",
+            "text": "The analysis did not identify a primary fault.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "analysis_conclusion"
+          }
+        ]
+      },
+      {
+        "section_id": "failure_chain",
+        "title": "Failure Chain",
+        "order": 1,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis did not provide an ordered causal chain.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "primary_fault",
+        "title": "Primary Fault",
+        "order": 2,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "A primary fault was not available from the analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "contributing_factors",
+        "title": "Contributing Factors",
+        "order": 3,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "The analysis provided no alternative fault candidates.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      },
+      {
+        "section_id": "evidence",
+        "title": "Evidence",
+        "order": 4,
+        "blocks": [
+          {
+            "type": "table",
+            "text": "",
+            "bullets": [],
+            "rows": [
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": "v2-event-evidence_3dbd5ad45d764451dd781b1539eb1ed725489ee53bb221048a54e3eb9b646eb7",
+                "trace_node_id": "attempt-0",
+                "event_index": 0,
+                "snippet": "{\"event_id\":\"failed\",\"evidence_refs\":[],\"kind\":\"error\",\"node_id\":\"attempt-0\",\"parent_id\":null,\"payload\":\"temporary failure\",\"sequence_index\":0,\"severity\":null,\"timestamp_candidates\":[]}",
+                "note": "canonical event field",
+                "status": "available"
+              },
+              {
+                "row_type": "evidence_citation",
+                "evidence_id": null,
+                "trace_node_id": "attempt-0",
+                "event_index": null,
+                "snippet": "[evidence unavailable]",
+                "note": "No canonical evidence identifier was supplied by the analysis.",
+                "status": "unavailable"
+              }
+            ],
+            "evidence_refs": [],
+            "claim_source": "evidence"
+          }
+        ]
+      },
+      {
+        "section_id": "recommended_follow_ups",
+        "title": "Recommended Follow-ups",
+        "order": 5,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "No recommended follow-ups were provided by the analysis.",
+            "bullets": [],
+            "rows": [],
+            "evidence_refs": [],
+            "claim_source": "placeholder"
+          }
+        ]
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: multiple canonical event kinds map to one execution node",
+        "related_refs": [
+          "node:attempt-1",
+          "event:recovered",
+          "event:end"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "contradiction",
+        "severity": "warning",
+        "message": "Analysis: successful run contains an explicitly failed node; failure is retained as recovered or conflicting evidence",
+        "related_refs": [
+          "node:attempt-0",
+          "event:failed"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: timestamps are absent; explicit sequence remains the ordering key",
+        "related_refs": [
+          "node:attempt-0",
+          "event:failed"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "unsupported_information",
+        "severity": "warning",
+        "message": "Analysis: timestamps are absent; explicit sequence remains the ordering key",
+        "related_refs": [
+          "node:attempt-1",
+          "event:recovered",
+          "event:end"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "consistency_violation",
+        "severity": "warning",
+        "message": "Duplicate evidence was deduplicated by evidence ID and event index.",
+        "related_refs": [
+          "evidence:v2-event-evidence_3dbd5ad45d764451dd781b1539eb1ed725489ee53bb221048a54e3eb9b646eb7"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "missing_evidence",
+        "severity": "warning",
+        "message": "An analysis claim has no canonical evidence identifier.",
+        "related_refs": [
+          "node:attempt-0"
+        ],
+        "section_id": null
+      },
+      {
+        "code": "missing_evidence",
+        "severity": "warning",
+        "message": "No canonical evidence identifier was supplied by the analysis.",
+        "related_refs": [],
+        "section_id": "evidence"
+      }
+    ],
+    "version": "v1"
+  },
+  "graph": {
+    "graph_id": "graph-v2-retry-run-8d2338ad4badcd36",
+    "source_trace_id": "v2-retry-doc",
+    "analysis_id": "8d2338ad4badcd36",
+    "version": "v1",
+    "nodes": [
+      {
+        "node_id": "event-failed",
+        "event_id": "failed",
+        "kind": "event",
+        "label": "error",
+        "status": "failure",
+        "order_index": 0,
+        "scope_id": "attempt-0",
+        "evidence_refs": [
+          "v2-event-evidence_3dbd5ad45d764451dd781b1539eb1ed725489ee53bb221048a54e3eb9b646eb7"
+        ]
+      },
+      {
+        "node_id": "event-recovered",
+        "event_id": "recovered",
+        "kind": "event",
+        "label": "output",
+        "status": "success",
+        "order_index": 1,
+        "scope_id": "attempt-1",
+        "evidence_refs": [
+          "v2-event-evidence_2c9bf69507fccf89f8a76538f03594c998eb39deccee8295e353e8a2aa78ce66"
+        ]
+      },
+      {
+        "node_id": "event-end",
+        "event_id": "end",
+        "kind": "event",
+        "label": "end",
+        "status": "success",
+        "order_index": 2,
+        "scope_id": "attempt-1",
+        "evidence_refs": [
+          "v2-event-evidence_51470efab1bfe886513547d96444484e8b4d61e3c5eb1b35055299d55a8ddb7b"
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "edge_id": "edge-causal-event-failed-event-recovered",
+        "from_node_id": "event-failed",
+        "to_node_id": "event-recovered",
+        "kind": "causal",
+        "label": "NormalizationResult.CanonicalRelation + TraceNode.parent_node_id",
+        "evidence_refs": [],
+        "style_hint": "dashed"
+      },
+      {
+        "edge_id": "edge-parent-event-failed-event-recovered",
+        "from_node_id": "event-failed",
+        "to_node_id": "event-recovered",
+        "kind": "parent",
+        "label": "parent",
+        "evidence_refs": [],
+        "style_hint": null
+      },
+      {
+        "edge_id": "edge-retry-event-failed-event-recovered",
+        "from_node_id": "event-failed",
+        "to_node_id": "event-recovered",
+        "kind": "retry",
+        "label": "TraceNode.series_id+attempt_index",
+        "evidence_refs": [],
+        "style_hint": "dashed"
+      },
+      {
+        "edge_id": "edge-sequence-event-failed-event-recovered",
+        "from_node_id": "event-failed",
+        "to_node_id": "event-recovered",
+        "kind": "sequence",
+        "label": "next",
+        "evidence_refs": [],
+        "style_hint": null
+      },
+      {
+        "edge_id": "edge-sequence-event-recovered-event-end",
+        "from_node_id": "event-recovered",
+        "to_node_id": "event-end",
+        "kind": "sequence",
+        "label": "next",
+        "evidence_refs": [],
+        "style_hint": null
+      }
+    ],
+    "groups": [
+      {
+        "group_id": "scope-attempt-0",
+        "kind": "execution_scope",
+        "label": "attempt-0",
+        "member_node_ids": [
+          "event-failed"
+        ],
+        "order_index": 0
+      },
+      {
+        "group_id": "scope-attempt-1",
+        "kind": "execution_scope",
+        "label": "attempt-1",
+        "member_node_ids": [
+          "event-recovered",
+          "event-end"
+        ],
+        "order_index": 1
+      },
+      {
+        "group_id": "retry-lookup",
+        "kind": "retry_group",
+        "label": "lookup",
+        "member_node_ids": [
+          "event-failed",
+          "event-recovered",
+          "event-end"
+        ],
+        "order_index": 2
+      }
+    ],
+    "annotations": [
+      {
+        "target_id": "event-recovered",
+        "annotation_type": "propagation",
+        "label": "analysis propagation",
+        "severity": null,
+        "evidence_refs": []
+      },
+      {
+        "target_id": "event-recovered",
+        "annotation_type": "retry",
+        "label": "retry attempt",
+        "severity": null,
+        "evidence_refs": []
+      }
+    ],
+    "diagnostics": [
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "successful run contains an explicitly failed node; failure is retained as recovered or conflicting evidence",
+        "related_ids": [
+          "attempt-0",
+          "failed"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "timestamps are absent; explicit sequence remains the ordering key",
+        "related_ids": [
+          "attempt-0",
+          "failed"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "multiple canonical event kinds map to one execution node",
+        "related_ids": [
+          "attempt-1",
+          "recovered",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "analysis_diagnostic",
+        "severity": "warning",
+        "message": "timestamps are absent; explicit sequence remains the ordering key",
+        "related_ids": [
+          "attempt-1",
+          "recovered",
+          "end"
+        ],
+        "recoverable": true
+      },
+      {
+        "code": "missing_timestamp",
+        "severity": "warning",
+        "message": "timestamp absent; canonical execution order is preserved",
+        "related_ids": [
+          "failed",
+          "recovered",
+          "end"
+        ],
+        "recoverable": true
+      }
+    ],
+    "metadata": {
+      "graph_version": "v1",
+      "source_trace_id": "v2-retry-doc",
+      "analysis_id": "8d2338ad4badcd36",
+      "node_count": 3,
+      "edge_count": 5,
+      "determinism_hash": "394a30a794f2a9dfd51f0f8d5c34cb5dcc0ebd8f806bbcf9df2483e8ae858d9f"
+    }
+  }
+}

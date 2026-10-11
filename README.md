@@ -6,7 +6,7 @@ Agent Postmortem Generator produces deterministic, evidence-based postmortem art
 
 The implemented MVP accepts the repository's generic JSON trace contract and produces a validated canonical trace, structured analysis, an evidence-bound postmortem, a deterministic execution graph, and Markdown, JSON, and Mermaid files.
 
-The MVP does not include framework adapters, batch processing, stdin input, PDF/HTML/SVG/PNG rendering, a web UI, network calls, LLM calls, or remote storage. Timeout, cancellation, retry, and competing-failure semantics are only available when represented explicitly by the current generic input contract and downstream models.
+The MVP does not include framework adapters, batch processing, stdin input, PDF/HTML/SVG/PNG rendering, a web UI, network calls, LLM calls, or remote storage. Explicit cancellation, retry recovery, and competing-failure semantics are supported where represented by the v2 contract and downstream models. Timeout semantics, retry exhaustion inference, structured errors, and tool request/result correlation remain deferred.
 
 ## Architecture
 
@@ -126,7 +126,7 @@ Tests include unit, integration, fixture, deterministic serialization, CLI, and 
 ## Planned and Deferred
 
 - Framework adapters for LangGraph, CrewAI, OpenAI Agents SDK, and AutoGen.
-- More expressive generic trace semantics for retries, cancellation, timeout, and parallel failures.
+- More expressive generic trace semantics for timeout, retry exhaustion, structured errors, tool correlation, and parallel failures.
 - PDF, HTML, SVG, and image export.
 - Batch execution, stdin support, machine-readable CLI results, and web UI features.
 - Performance, scalability, and multi-run comparison work.

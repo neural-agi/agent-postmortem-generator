@@ -22,6 +22,13 @@ from agent_postmortem.validation.trace_document import (
     TraceEvent,
     ValidatedTraceDocument,
 )
+from agent_postmortem.validation.v2_document import (
+    V2Event,
+    V2Evidence,
+    V2Node,
+    V2Run,
+    V2ValidatedTraceDocument,
+)
 
 __all__ = [
     "Diagnostic",
@@ -29,6 +36,11 @@ __all__ = [
     "DiagnosticSeverity",
     "TraceEnvelope",
     "TraceEvent",
+    "V2Event",
+    "V2Evidence",
+    "V2Node",
+    "V2Run",
+    "V2ValidatedTraceDocument",
     "ValidatedTraceDocument",
     "ValidationReport",
     "ValidationResult",

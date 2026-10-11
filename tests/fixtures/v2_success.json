@@ -1,0 +1,1 @@
+{"document_id":"v2-success-doc","trace_version":"v2","run_id":"v2-success-run","run":{"status":"success"},"nodes":[{"node_id":"agent","kind":"agent_step","status":"success","sequence_index":0}],"events":[{"event_id":"start","sequence_index":0,"kind":"start","node_id":"agent"},{"event_id":"end","sequence_index":1,"kind":"end","node_id":"agent"}]}

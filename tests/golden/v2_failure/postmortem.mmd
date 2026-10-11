@@ -1,0 +1,10 @@
+graph TD
+    n0["error [error]"]
+    n1["end [end]"]
+    subgraph tool
+        n0
+        n1
+    end
+    n0 -->|next| n1
+    %% n0: first meaningful fault
+    %% n0: terminal failure

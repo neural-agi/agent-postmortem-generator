@@ -38,14 +38,21 @@ from agent_postmortem.normalization.models import (
     ProvenanceEntry,
     RelationType,
 )
+from agent_postmortem.normalization.v2_engine import normalize_v2
 from agent_postmortem.validation.trace_document import TraceEvent, ValidatedTraceDocument
+from agent_postmortem.validation.v2_document import V2ValidatedTraceDocument
 
 
 class NormalizationEngine:
     """Normalize the Part 2 validated document into Part 1 canonical types."""
 
-    def normalize(self, document: ValidatedTraceDocument) -> NormalizationResult:
+    def normalize(
+        self, document: ValidatedTraceDocument | V2ValidatedTraceDocument
+    ) -> NormalizationResult:
         """Convert one validated input document into an immutable result."""
+
+        if isinstance(document, V2ValidatedTraceDocument):
+            return normalize_v2(document)
 
         root_ref = _provenance(
             document.envelope.run_id,

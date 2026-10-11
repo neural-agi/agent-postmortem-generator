@@ -25,6 +25,11 @@ class DiagnosticCode(StrEnum):
     DUPLICATE_IDENTIFIER = "duplicate_identifier"
     BROKEN_REFERENCE = "broken_reference"
     OUT_OF_ORDER_EVENTS = "out_of_order_events"
+    UNSUPPORTED_VERSION = "unsupported_version"
+    INVALID_ENUM_VALUE = "invalid_enum_value"
+    PARENT_CYCLE = "parent_cycle"
+    INVALID_RETRY_METADATA = "invalid_retry_metadata"
+    CONFLICTING_RELATIONSHIP = "conflicting_relationship"
 
 
 @dataclass(frozen=True, slots=True)

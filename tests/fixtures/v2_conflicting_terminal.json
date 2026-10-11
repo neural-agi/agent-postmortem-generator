@@ -1,0 +1,1 @@
+{"document_id":"v2-conflict-doc","trace_version":"v2","run_id":"v2-conflict-run","run":{"status":"success"},"nodes":[{"node_id":"agent","kind":"agent_step","status":"failure","sequence_index":0}],"events":[{"event_id":"error","sequence_index":0,"kind":"error","node_id":"agent","payload":"failed"},{"event_id":"end","sequence_index":1,"kind":"end","node_id":"agent"}]}

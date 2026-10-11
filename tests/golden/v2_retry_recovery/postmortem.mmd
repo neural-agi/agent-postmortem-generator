@@ -1,0 +1,23 @@
+graph TD
+    n0["error [failed]"]
+    n1["output [recovered]"]
+    n2["end [end]"]
+    subgraph attempt-0
+        n0
+    end
+    subgraph attempt-1
+        n1
+        n2
+    end
+    subgraph lookup
+        n0
+        n1
+        n2
+    end
+    n0 -.->|NormalizationResult.CanonicalRelation + TraceNode.parent_node_id| n1
+    n0 -->|parent| n1
+    n0 -.->|TraceNode.series_id+attempt_index| n1
+    n0 -->|next| n1
+    n1 -->|next| n2
+    %% n1: analysis propagation
+    %% n1: retry attempt
