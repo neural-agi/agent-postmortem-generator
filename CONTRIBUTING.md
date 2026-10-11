@@ -1,272 +1,195 @@
 # Contributing to Agent Postmortem Generator
 
-First off, thank you for considering contributing.
+Agent Postmortem Generator (APG) is an open-source, local-first tool for deterministic, evidence-based analysis of AI agent execution traces.
 
-Agent Postmortem Generator aims to become reliable infrastructure for debugging AI agent systems. That means maintainability, determinism, and clean architecture matter just as much as adding new features.
+Contributions are welcome. The project's priorities are correctness, reproducibility, explicit boundaries, and maintainable architecture. A feature is not an improvement if it introduces unsupported inference or unnecessary complexity.
 
-Before opening an issue or pull request, please read this document.
+## Engineering Principles
 
----
+Contributions should preserve these principles:
 
-# Philosophy
+- **Determinism:** Equivalent inputs should produce reproducible analysis and artifacts.
+- **Evidence over assumptions:** Findings must be supported by the trace. Missing evidence must not become an invented conclusion.
+- **Explicit validation:** Invalid inputs and unsupported states should be handled deliberately, with useful diagnostics.
+- **Clear boundaries:** Parsing, validation, normalization, analysis, postmortem generation, graph generation, rendering, and CLI orchestration have distinct responsibilities.
+- **Strong typing:** Use the project's existing type system and avoid unnecessary untyped interfaces.
+- **Testability:** New behavior must be verifiable through focused automated tests.
+- **Minimal complexity:** Prefer small, cohesive changes over speculative abstractions or premature optimization.
 
-This project favors:
+Avoid hidden behavior, silent error recovery, duplicated pipeline logic, framework-specific assumptions in the generic trace pipeline, and abstractions without a demonstrated need.
 
-- Deterministic behavior
-- Explicit validation
-- Small, focused modules
-- Strong typing
-- Testability
-- Clear documentation
-- Evidence-based design
+## Before You Start
 
-This project avoids:
+Before opening a pull request:
 
-- Hidden magic
-- Silent error recovery
-- Framework-specific assumptions
-- Large monolithic modules
-- Premature optimization
-- Unnecessary abstractions
+1. Check existing issues and pull requests for related work.
+2. Review the relevant architecture and contract documentation under `docs/`.
+3. Keep the change focused on one problem or feature.
+4. For changes to trace semantics or architecture, explain the intended behavior and compatibility implications before expanding the implementation.
 
-If a feature makes the architecture more complicated without providing significant value, it probably does not belong in the project.
+For changes involving the V2 generic trace contract, consult:
 
----
+- `docs/roadmap/agent_postmortem_generic_trace_contract_v2.md`
+- `docs/roadmap/agent_postmortem_generic_trace_contract_v2_test_coverage.md`
 
-# Repository Structure
+## Development Setup
 
-```
-src/
-    agent_postmortem/
-        parsing/
-        validation/
-        domain/
-        normalization/
-        analysis/
-        postmortem/
-        graph/
-        renderers/
+### Requirements
 
-tests/
-docs/
-examples/
-```
+- Python 3.13 or later
+- [uv](https://docs.astral.sh/uv/)
 
-Please keep new code within the appropriate module.
-
----
-
-# Before You Start
-
-Please check existing:
-
-- Issues
-- Discussions
-- Pull Requests
-
-If you're planning a significant architectural change, open a discussion first.
-
-Small bug fixes do not require prior discussion.
-
----
-
-# Development Setup
-
-Clone the repository.
+### Clone and install
 
 ```bash
 git clone https://github.com/neural-agi/agent-postmortem-generator.git
-
 cd agent-postmortem-generator
-```
-
-Create the development environment.
-
-```bash
 uv sync
 ```
 
-Run the test suite.
+### Run the checks
+
+Run the test suite and static checks before submitting changes:
 
 ```bash
 uv run pytest
-```
-
-Run formatting.
-
-```bash
-uv run ruff format .
-```
-
-Run linting.
-
-```bash
-uv run ruff check .
-```
-
-Run type checking.
-
-```bash
 uv run mypy src
+uv run ruff check .
+uv run ruff format --check .
+uv build
 ```
 
----
+All checks should pass. If a check fails because of your changes, fix the underlying issue rather than suppressing it without justification.
 
-# Coding Standards
+## Architecture and Code Organization
 
-## Python
+APG follows a staged processing pipeline:
 
-- Python 3.13+
-- Strong typing
-- Strict mypy
-- Ruff formatting
-- Small functions
-- Clear names
+```text
+Generic JSON Trace
+        |
+        v
+Parsing and Validation
+        |
+        v
+Canonical Trace Model
+        |
+        v
+Normalization
+        |
+        v
+Analysis
+        |
+        v
+Postmortem Generation
+        |
+        v
+Graph Generation
+        |
+        v
+Rendering and Export
+```
 
----
+The CLI orchestrates this pipeline. It should not duplicate trace interpretation, analysis rules, or output-generation logic.
 
-## Architecture
+Place new code in the existing module responsible for that behavior. Avoid introducing new top-level abstractions or reorganizing modules unless the change has a clear architectural justification.
 
-Each module should have one responsibility.
+## Testing Requirements
 
-Avoid:
+Tests are part of the implementation, not an optional follow-up.
 
-- giant utility files
-- circular imports
-- mixed responsibilities
-- deeply nested control flow
+### Add or update tests when you:
 
-If you find yourself writing a file larger than roughly 250–300 lines, consider whether it should be split.
+- Introduce or modify trace validation rules.
+- Change normalization or canonical-model behavior.
+- Add analysis rules or alter outcome and retry semantics.
+- Modify postmortem content, graph generation, or exported artifacts.
+- Change CLI arguments, diagnostics, exit codes, or filesystem behavior.
+- Fix a bug or address a previously uncovered edge case.
 
----
+### Test expectations
+
+- Test the intended behavior and relevant failure cases.
+- Include boundary cases where they affect correctness.
+- Keep tests deterministic and independent of network services.
+- Preserve existing V1 behavior unless a change explicitly intends otherwise.
+- For V2 contract changes, update the relevant fixtures, acceptance tests, and contract-to-test coverage documentation.
+- Update golden outputs when output changes are intentional and justified. Do not regenerate them merely to make failing tests pass.
+
+## Trace Compatibility
+
+APG supports generic V1 and V2 trace workflows. Changes to shared pipeline components must account for both versions.
+
+Do not silently change established V1 behavior while implementing V2 features. When a contract or semantic change is necessary:
+
+1. Document the intended behavior.
+2. Identify the compatibility impact.
+3. Add or update tests for the affected versions.
+4. Update the relevant contract and coverage documentation.
+
+Analysis must distinguish known outcomes from unknown outcomes. Retry recovery, cancellation, and competing-failure semantics must follow the evidence and supported contract rather than unsupported inference.
+
+## Error Handling and Diagnostics
+
+Errors should be explicit, actionable, and consistent with existing behavior.
+
+- Reject malformed or invalid traces at the appropriate stage.
+- Preserve useful diagnostic context.
+- Do not silently discard evidence or replace invalid data with invented defaults.
+- Preserve the established CLI exit-code contract unless a deliberate, documented change is required.
+- Test both the failure condition and its observable CLI behavior where applicable.
 
 ## Documentation
 
-Public classes and functions should include useful docstrings.
+Update documentation when changes affect user-visible behavior, trace contracts, CLI usage, architecture, limitations, or development workflows.
 
-Complex algorithms should explain **why**, not simply **what**.
+Keep examples consistent with the implementation. Clearly distinguish supported behavior from planned or deferred capabilities.
 
-Avoid redundant comments.
-
----
-
-# Testing
-
-Every new feature should include appropriate tests.
-
-We currently use:
-
-- Unit tests
-- Integration tests
-- Fixtures
-
-New behavior should be deterministic.
-
-Tests should never depend on:
-
-- internet access
-- randomness
-- local machine configuration
-- wall-clock timing
-
----
-
-# Pull Requests
+## Pull Requests
 
 A good pull request should:
 
-- have one clear purpose
-- include tests when appropriate
-- update documentation if needed
-- pass formatting, linting, and type checking
-- keep unrelated changes out
+- Describe the problem and the proposed change.
+- Explain relevant design decisions and trade-offs.
+- Include focused tests and any necessary fixture or documentation updates.
+- Report the checks you ran.
+- Identify compatibility implications or known limitations.
 
-Please keep pull requests focused.
+Keep changes reviewable. Avoid unrelated formatting changes, broad refactors, or generated-file churn that obscures the actual implementation.
 
-Small, reviewable PRs are preferred over very large ones.
+## Commit Messages
 
----
+Use clear, concise commit messages. Prefer Conventional Commit-style prefixes where appropriate:
 
-# Commit Messages
-
-Use Conventional Commits whenever possible.
-
-Examples:
-
-```
-feat(parser): add JSON reader
-
-fix(validation): detect duplicate node IDs
-
-refactor(domain): split canonical trace model
-
-test(parser): improve malformed trace coverage
-
-docs(readme): update project roadmap
+```text
+feat: add explicit terminal outcome handling
+fix: reject invalid parent references
+test: cover retry recovery edge cases
+docs: update V2 trace contract
+refactor: simplify normalization flow
 ```
 
----
+The message should describe the change, not merely the file modified.
 
-# Reporting Bugs
+## Scope and Roadmap
 
-Please include:
+APG prioritizes a reliable generic trace pipeline before adding broader integrations.
 
-- Python version
-- Operating system
-- Steps to reproduce
-- Expected behavior
-- Actual behavior
-- Relevant logs or trace files
+Framework adapters, batch processing, new rendering targets, remote services, and other deferred capabilities should not be introduced incidentally. Larger features should have a clear use case, defined scope, tests, and an architectural rationale.
 
-If possible, attach a minimal reproducible example.
+## Final Checklist
 
----
+Before submitting a pull request:
 
-# Feature Requests
+- [ ] The change has a clear, focused purpose.
+- [ ] Existing behavior is preserved where required.
+- [ ] Relevant tests have been added or updated.
+- [ ] `uv run pytest` passes.
+- [ ] `uv run mypy src` passes.
+- [ ] `uv run ruff check .` passes.
+- [ ] `uv run ruff format --check .` passes.
+- [ ] `uv build` succeeds.
+- [ ] Documentation and fixtures are updated where necessary.
+- [ ] No unrelated changes or accidental generated files are included.
 
-Feature requests are welcome.
-
-Please explain:
-
-- the problem you're solving
-- why existing behavior is insufficient
-- possible alternatives
-- expected benefits
-
-Features should align with the project's philosophy.
-
----
-
-# Architectural Changes
-
-Large architectural changes should reference the corresponding design documents in:
-
-```
-docs/roadmap/
-```
-
-If the proposed implementation significantly changes an existing design, explain the reasoning before submitting a pull request.
-
----
-
-# Code of Conduct
-
-By participating in this project, you agree to follow the project's Code of Conduct.
-
-Please read:
-
-```
-CODE_OF_CONDUCT.md
-```
-
----
-
-# Questions
-
-If you're unsure where something belongs, open a GitHub Discussion before writing a large amount of code.
-
-It is much easier to review an idea than to review a thousand-line pull request.
-
----
-
-Thank you for helping make Agent Postmortem Generator a reliable, deterministic, and maintainable tool for the AI engineering community.
+Thank you for helping make APG more reliable, reproducible, and easier to maintain.
