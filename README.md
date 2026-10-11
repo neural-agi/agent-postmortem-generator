@@ -1,82 +1,133 @@
-# Agent Postmortem Generator
+<h1 align="center">◈ Agent Postmortem Generator</h1>
 
-Agent Postmortem Generator produces deterministic, evidence-based postmortem artifacts from generic JSON execution traces. It makes failed AI-agent executions easier to inspect without heuristic inference or external services.
+<p align="center">
+  <strong>From agent execution traces to evidence-backed postmortems.</strong>
+  <br>
+  Deterministic analysis. Reproducible artifacts. Zero LLM dependency.
+</p>
 
-## MVP Scope
+---
 
-The implemented MVP accepts the repository's generic JSON trace contract and produces a validated canonical trace, structured analysis, an evidence-bound postmortem, a deterministic execution graph, and Markdown, JSON, and Mermaid files.
 
-The MVP does not include framework adapters, batch processing, stdin input, PDF/HTML/SVG/PNG rendering, a web UI, network calls, LLM calls, or remote storage. Explicit cancellation, retry recovery, and competing-failure semantics are supported where represented by the v2 contract and downstream models. Timeout semantics, retry exhaustion inference, structured errors, and tool request/result correlation remain deferred.
 
-## Architecture
+---
+
+## ◈ Overview
+
+Agent Postmortem Generator (APG) transforms generic JSON execution traces into structured analysis, evidence-backed postmortems, and deterministic execution graphs.
+
+Instead of asking an LLM to reconstruct what happened, APG analyzes the evidence already present in a trace. Unknown outcomes remain unknown. Findings stay grounded in recorded events.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>01 / Analyze</h3>
+      Validate traces, normalize execution data, and identify supported outcomes and retry relationships.
+    </td>
+    <td width="50%" valign="top">
+      <h3>02 / Explain</h3>
+      Generate postmortems that distinguish recorded evidence from conclusions the trace cannot establish.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>03 / Visualize</h3>
+      Build deterministic execution graphs with Mermaid.
+    </td>
+    <td width="50%" valign="top">
+      <h3>04 / Export</h3>
+      Produce Markdown reports, machine-readable JSON, and Mermaid diagrams.
+    </td>
+  </tr>
+</table>
+
+## ⌁ Quick Start
+
+**Requirements:** Python 3.13+ and [uv](https://docs.astral.sh/uv/).
+
+```bash
+git clone https://github.com/neural-agi/agent-postmortem-generator.git
+cd agent-postmortem-generator
+
+uv sync
+
+uv run apg --help
+uv run apg --version
+uv run apg validate tests/fixtures/valid_minimal_trace.json
+uv run apg analyze tests/fixtures/valid_minimal_trace.json --output-dir output
+```
+
+<details>
+  <summary><strong>Output formats</strong></summary>
+
+  By default, APG generates all three artifacts:
+
+  ```text
+  output/
+  ├── postmortem.md
+  ├── postmortem.json
+  └── postmortem.mmd
+  ```
+
+  Generate a specific format:
+
+  ```bash
+  uv run apg analyze tests/fixtures/valid_minimal_trace.json --format markdown --output-dir output
+  uv run apg analyze tests/fixtures/valid_minimal_trace.json --format json --output-dir output
+  uv run apg analyze tests/fixtures/valid_minimal_trace.json --format mermaid --output-dir output
+  ```
+
+  Existing output files are preserved unless `--overwrite` is supplied.
+
+</details>
+
+## ⌘ Architecture
+
+<p align="center">
+  <strong>TRACE IN → EVIDENCE THROUGHOUT → ARTIFACTS OUT</strong>
+</p>
 
 ```text
-Generic JSON trace
-    -> Parser and Validation
-    -> Canonical Trace Model
-    -> Normalization
-    -> Analysis
-    -> Postmortem Generation
-    -> Graph Generation
-    -> Rendering and Export
-    -> Markdown / JSON / Mermaid artifacts
+┌──────────────────────────────┐
+│       Generic JSON Trace     │
+└──────────────┬───────────────┘
+               ▼
+┌──────────────────────────────┐
+│      Parsing & Validation    │
+└──────────────┬───────────────┘
+               ▼
+┌──────────────────────────────┐
+│   Canonical Trace + Evidence │
+└──────────────┬───────────────┘
+               ▼
+┌──────────────────────────────┐
+│    Normalization & Analysis  │
+└──────────────┬───────────────┘
+               ▼
+┌──────────────────────────────┐
+│   Postmortem + Graph Output  │
+└──────────────┬───────────────┘
+               ▼
+┌──────────────────────────────┐
+│     Markdown / JSON / Mermaid│
+└──────────────────────────────┘
 ```
 
-The CLI only validates command-line input, calls these stages, reports diagnostics, and selects output targets. It does not interpret trace semantics or duplicate pipeline logic.
+Each stage has a defined responsibility. The CLI handles arguments, invokes the pipeline, reports diagnostics, and selects output destinations. Trace interpretation remains in the underlying pipeline.
 
-## Installation
+## ◉ Design Principles
 
-Requirements: Python 3.13 and `uv`.
+- **Deterministic by design.** The same inputs produce reproducible analysis and artifacts.
+- **Evidence over speculation.** Conclusions are constrained by the available trace.
+- **Explicit uncertainty.** Missing evidence does not become an invented success or failure.
+- **Local-first execution.** No LLM inference, network calls, or remote storage is required.
+- **Versioned contracts.** Supports the generic V1 and V2 trace workflows.
 
-```bash
-uv sync
-```
+## ▣ Input Contract
 
-## Quick Start
+APG accepts generic JSON traces under the supported V1 and V2 contracts.
 
-The committed minimal fixture is `tests/fixtures/valid_minimal_trace.json`.
-
-```bash
-apg --help
-apg --version
-apg validate tests/fixtures/valid_minimal_trace.json
-apg analyze tests/fixtures/valid_minimal_trace.json --output-dir output
-```
-
-The default `analyze` command writes `output/postmortem.md`, `output/postmortem.json`, and `output/postmortem.mmd`.
-
-Select one format with `--format`:
-
-```bash
-apg analyze tests/fixtures/valid_minimal_trace.json --format markdown --output-dir output
-apg analyze tests/fixtures/valid_minimal_trace.json --format json --output-dir output
-apg analyze tests/fixtures/valid_minimal_trace.json --format mermaid --output-dir output
-```
-
-The default is `--format all`. Existing files are not replaced unless `--overwrite` is supplied:
-
-```bash
-apg analyze tests/fixtures/valid_minimal_trace.json --output-dir output --overwrite
-```
-
-Output directories are created when possible. The CLI prints a concise artifact summary to stdout and diagnostics or warnings to stderr.
-
-## Exit Codes
-
-| Code | Meaning |
-| ---: | --- |
-| 0 | Command succeeded |
-| 2 | Usage error or unsupported option |
-| 3 | Input path does not exist, is not a file, or is unreadable |
-| 4 | Input could not be parsed or validated |
-| 5 | Normalization, analysis, postmortem, or graph pipeline failure |
-| 6 | Output planning or filesystem export failure |
-
-Malformed JSON, invalid roots, missing required fields, duplicate IDs, broken references, and invalid event ordering are validation failures. Incomplete but valid traces may still produce artifacts with explicit analysis warnings.
-
-## Generic JSON Input
-
-The MVP input is an object containing `document_id`, `trace_version`, `run_id`, and an `events` array. Each event requires `event_id` and `sequence_index`; `timestamp` and `parent_id` are optional. Unknown root and event fields are preserved where supported.
+A minimal V1 example:
 
 ```json
 {
@@ -93,49 +144,42 @@ The MVP input is an object containing `document_id`, `trace_version`, `run_id`, 
 }
 ```
 
-The generic contract does not claim framework-specific event meanings. Do not add timeout, cancellation, retry, or causal semantics unless the current parser, normalizer, and analysis models represent them explicitly.
+Validation covers applicable structural and semantic constraints, including reference integrity and event ordering. See `tests/fixtures/` for executable examples and `docs/roadmap/` for the V2 contract and test-coverage matrix.
 
-## Development
+## ⚠ Limitations
 
-Run the complete test suite and quality gates from the repository root:
+APG deliberately avoids inferring behavior that the trace cannot establish.
+
+| Capability | Current status |
+|---|---|
+| V1 and V2 generic trace workflows | Supported |
+| Deterministic analysis and postmortems | Supported |
+| Markdown, JSON, and Mermaid exports | Supported |
+| Framework-specific adapters | Not implemented |
+| Batch processing and stdin input | Not implemented |
+| Timeout classification | Deferred |
+| Retry-exhaustion inference without explicit evidence | Deferred |
+| Structured errors and tool request/result correlation | Deferred |
+| Sensitive-data redaction | Not provided |
+| PDF, HTML, SVG, PNG, or web UI | Not implemented |
+
+Exports are atomic per file, not transactional across the complete artifact set.
+
+## ⌘ Development
 
 ```bash
+uv sync
 uv run pytest
 uv run mypy src
 uv run ruff check .
 uv run ruff format --check .
 uv build
-git diff --check
 ```
 
-Tests include unit, integration, fixture, deterministic serialization, CLI, and export coverage. Golden report fixtures are stored under `tests/golden/`; input fixtures are under `tests/fixtures/`.
+---
 
-## Current Status
-
-| Part | Component | Status |
-| ---: | --- | --- |
-| 1 | Canonical Trace Model | Implemented |
-| 2 | Parser and Validation Engine | Implemented |
-| 3 | Normalization Engine | Implemented for the generic contract |
-| 4 | Analysis Engine | Implemented for supported explicit evidence and relationships |
-| 5 | Postmortem Generation | Implemented |
-| 6 | Graph Generation | Implemented |
-| 7 | Rendering and Export | Implemented for Markdown, JSON, and Mermaid |
-| 8 | CLI and Developer UX | Implemented for generic JSON |
-
-## Planned and Deferred
-
-- Framework adapters for LangGraph, CrewAI, OpenAI Agents SDK, and AutoGen.
-- More expressive generic trace semantics for timeout, retry exhaustion, structured errors, tool correlation, and parallel failures.
-- PDF, HTML, SVG, and image export.
-- Batch execution, stdin support, machine-readable CLI results, and web UI features.
-- Performance, scalability, and multi-run comparison work.
-
-## Design Principles
-
-- Deterministic output over heuristic completion.
-- Validation before semantic analysis.
-- Immutable canonical and intermediate models.
-- Evidence and provenance preserved through downstream stages.
-- Framework-specific logic outside the core pipeline.
-- No silent repair or fabricated causal relationships.
+<p align="center">
+  <strong>Make agent failures explainable. Keep the evidence intact.</strong>
+  <br />
+  <sub>Built for reproducible, evidence-driven debugging of AI agent execution.</sub>
+</p>
